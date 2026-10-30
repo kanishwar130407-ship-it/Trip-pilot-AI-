@@ -1,0 +1,2219 @@
+Build TripPilot AI, a responsive, production-quality, AI-native travel planning, booking, live-safety, and intelligent replanning web app in Google AI Studio.
+
+TripPilot AI should feel like a premium travel marketplace such as MakeMyTrip, but powered by an autonomous AI travel agent that can plan personalized trips, compare and book packages, monitor a journey in real time, detect risks, translate languages, manage group decisions, control budget, and automatically replan when disruptions occur.
+
+Use React, Tailwind CSS, Framer Motion, React Three Fiber, @react-three/drei, Lucide React, Zustand, React Router, Recharts, and the Gemini API.
+
+Use realistic mock data for flights, trains, buses, hotels, packages, weather, traffic, hospitals, police stations, road risk, fuel stops, expenses, attractions, and local food so the complete demo works without paid travel APIs.
+
+Do not hardcode API keys. Read Gemini and Google Maps credentials from environment variables or AI Studio’s Secrets panel. Prefer server-side/API-route Gemini calls so keys are never exposed in the browser; if Gemini fails, is rate-limited, or unavailable, gracefully fall back to realistic hardcoded demo data and display a small “Demo data” badge.
+
+Core Product Vision
+TripPilot AI is a 6-step guided travel operating system:
+
+Plan — AI understands the traveler’s intent and creates a personalized itinerary.
+
+Package — AI compares transport, stay, meals, activities, and cancellation options.
+
+Verify & Book — Traveler details, validation, mock payment, and booking confirmation.
+
+Companion — Live dashboard during the trip: navigation, safety, weather, expenses, translation, and alerts.
+
+Replan — AI detects disruptions and proposes safe, budget-aware alternatives.
+
+Dossier — Downloadable/shareable smart trip document with itinerary, bookings, contacts, emergency info, and expenses.
+
+The app must support global destinations, India-first travel intelligence, deep Tamil Nadu coverage, full multilingual UI, Trip Mode personalization, offline emergency access, and a persistent AI assistant.
+
+Technology Requirements
+React + Vite or Next.js-style app structure inside Google AI Studio.
+
+Tailwind CSS for all styling.
+
+Framer Motion for page transitions, micro-interactions, and animated feedback.
+
+React Three Fiber and drei for lightweight low-poly 3D visuals.
+
+Zustand for global trip, user, language, safety, booking, expense, and UI state.
+
+React Router for routes including /, /planner, /package, /verification, /companion, /replanning, /dossier, and /track/:id.
+
+Recharts for budget, expense, route-risk, and trip analytics.
+
+Lucide React icons throughout.
+
+Gemini API for structured planning, recommendations, translation, advisories, chat, replanning, and voice assistance.
+
+Google Maps JavaScript API when a Maps key is available; otherwise use Leaflet + OpenStreetMap.
+
+Web Speech API for speech recognition and speech synthesis.
+
+Service worker + manifest for PWA, offline caching, and offline emergency mode.
+
+LocalStorage for preferences, trusted contacts, recent searches, mock live sharing, and saved trips.
+
+Optional Firebase Realtime Database/Firestore support for real cross-device location sharing; if unconfigured, use mock storage with a clear banner.
+
+Brand & Design System
+Create an “Aero Premium” travel-tech design language:
+
+Primary navy: #0B1F3A
+
+Accent orange: #FF7A1A
+
+Safe/success teal: #14B8A6
+
+Warning amber: #F59E0B
+
+Danger/SOS red: #EF4444
+
+Light background: #F5F8FC
+
+Dark background: #071427
+
+Design rules:
+
+Poppins for headings, Inter for body, Noto Sans Tamil for Tamil UI.
+
+20px rounded corners, 8px spacing grid, consistent visual hierarchy.
+
+Glassmorphism cards with translucent white/navy surfaces, backdrop blur, soft shadows, and subtle blue-orange gradients.
+
+Mobile-first responsive layout: bottom navigation on mobile, top navigation on desktop.
+
+Dark/light mode toggle persisted in localStorage.
+
+Lucide icons everywhere.
+
+Framer Motion entry animations: staggered fade-up, slide transitions, soft bounce, animated counters, and progress rings.
+
+Accessible tap targets, visible focus states, aria labels, semantic HTML, keyboard navigation, color-contrast compliance, and prefers-reduced-motion support.
+
+Empty states, skeleton loaders, error states, retry buttons, and toast notifications for every async action.
+
+No layout shift, no clipped text, no horizontal scroll on mobile.
+
+Splash Screen
+On first visit per browser session, show a 3.5-second cinematic splash screen with a visible Skip button.
+
+Sequence:
+
+Dark navy screen with a glowing low-poly 3D Earth fading in and rotating.
+
+India highlighted in orange.
+
+A low-poly aeroplane flies in a curved arc around the globe, leaving a glowing orange trail.
+
+Draw flight route lines between Chennai, Delhi, Mumbai, and Kolkata.
+
+“TripPilot AI” logo scales up with a soft bounce.
+
+Tagline fades in: “Plan. Travel. Replan. Stay safe.”
+
+Progress bar fills while the app loads.
+
+Splash slides upward like a curtain to reveal the home screen.
+
+Build all 3D models from simple low-poly geometry only. No external GLTF/model files. Respect reduced-motion preferences by offering a simplified static splash.
+
+App Structure
+Show a top stepper/progress bar on every main page:
+
+Planner
+
+Package
+
+Verification
+
+Companion
+
+Replanning
+
+Dossier
+
+Rules:
+
+Current step is highlighted.
+
+Completed steps show a green tick.
+
+Future steps are locked until the previous step is finished, except Companion after booking.
+
+All trip data is stored in one global Zustand store.
+
+Page transitions use Framer Motion slide + fade.
+
+Preserve form data when navigating between pages.
+
+Include a Demo Mode toggle that preloads a sample trip: 3-day Chennai to Ooty trip under ₹15,000 for 2 travelers.
+
+Add an in-app Reset demo action that clears local state safely.
+
+Global Search & Trip Mode
+Place a powerful global search bar at the top of the app, with a Trip Mode selector immediately beside it.
+
+Destination Database
+Expand destinations to include global, Indian, and Tamil Nadu places.
+
+Global destinations:
+
+Dubai, Singapore, Bali, Bangkok, Kuala Lumpur, Maldives, Kathmandu, Colombo, London, Paris, Tokyo, Sydney, New York, Istanbul, Zurich.
+
+India destinations:
+
+Chennai, Coimbatore, Madurai, Trichy, Salem, Erode, Thanjavur, Rameswaram, Kanyakumari, Kodaikanal, Ooty, Yercaud, Valparai, Munnar, Wayanad, Coorg, Goa, Manali, Leh-Ladakh, Jaipur, Udaipur, Varanasi, Rishikesh, Andaman Islands, Kerala Backwaters, Darjeeling, Shillong, Meghalaya.
+
+Tamil Nadu special places:
+
+Chennai, Mahabalipuram, Pondicherry, Chettinad, Thanjavur, Madurai, Rameswaram, Kanyakumari, Kodaikanal, Ooty, Coonoor, Valparai, Yercaud, Kolli Hills, Courtallam, Hogenakkal, Dhanushkodi, Vandalur Zoo, Guindy National Park, Cholamandalam Artists’ Village.
+
+For every destination, store:
+
+Name in English and Tamil.
+
+State/country.
+
+Short description in English and Tamil.
+
+Best season.
+
+Approximate budget level.
+
+Popular activities.
+
+Nearby attractions.
+
+Safety level.
+
+Suitable trip modes.
+
+Suggested stay areas.
+
+Local food highlights.
+
+Accessibility notes for elderly/disabled travelers where relevant.
+
+Search bar features:
+
+English and Tamil typing.
+
+Fuzzy matching and typo tolerance.
+
+Popular destination chips.
+
+Recent searches.
+
+“Near me” suggestions using geolocation.
+
+AI-powered destination suggestions based on trip mode, budget, days, season, interests, and weather.
+
+Voice search.
+
+Keyboard navigation and clear “no results” state.
+
+Trip Mode Planner
+Add a horizontally scrollable Trip Mode pill selector beside the search bar.
+
+Trip modes:
+
+Family Trip — குடும்ப பயணம்
+
+Adventure — சாஹச பயணம்
+
+Solo Ride — தனி பயணம்
+
+Friends Trip — நண்பர்களுடன் பயணம்
+
+Honeymoon — தேனிலவு பயணம்
+
+Pilgrimage — புனித யாத்திரை
+
+Food Tour — உணவு சுற்றுலா
+
+Nature Escape — இயற்கை பயணம்
+
+Bike Trip — பைக் பயணம்
+
+Weekend Getaway — வார இறுதி சுற்றுலா
+
+Budget Trip — சிக்கன பயணம்
+
+Luxury Trip — ஆடம்பர பயணம்
+
+UI requirements:
+
+Each pill has an icon, English label, and Tamil label.
+
+Selected mode gets a glowing accent border.
+
+Trip mode affects destination suggestions, itinerary, activities, hotels, safety tips, packing list, and estimated costs.
+
+Trip mode behavior:
+
+Family Trip: safe, family-friendly destinations; hotels, parks, temples, beaches, zoos, sightseeing; child and elder-friendly tips; avoid extreme adventure by default.
+
+Adventure: trekking, camping, rafting, paragliding, scuba diving, bike routes; difficulty, gear checklist, weather warnings, emergency contacts.
+
+Solo Ride: safe solo routes, hostels, bike rentals, solo-friendly cafes; stronger safety features including live sharing, SOS, trusted contacts, check-ins, and night warnings.
+
+Friends Trip: group activities, nightlife, beaches, road trips, adventure sports, budget stays, and group expense splitter.
+
+Honeymoon: romantic resorts, private beaches, hill stations, sunset points, privacy, luxury stays, couple activities.
+
+Pilgrimage: temples, pilgrimage circuits, darshan timings, accommodation near temples; include Rameswaram, Madurai, Thanjavur, Kanyakumari, Varanasi, and Tirupati.
+
+Food Tour: local foods, street-food areas, restaurants, food trails; include Chettinad chicken, filter coffee, Madurai jigarthanda, Kanyakumari fish curry, and Thanjavur meals.
+
+Bike Trip: scenic routes, fuel stops, rest points, weather, road conditions, riding time, helmet/safety reminders.
+
+Weekend Getaway: destinations within 100–300 km and quick 2-day itineraries.
+
+Budget Trip: low-cost destinations, hostels, public transport, street food.
+
+Luxury Trip: 5-star hotels, private transfers, fine dining, premium experiences.
+
+Page 1: Planner
+Create an AI-assisted trip planner.
+
+On Demo Mode load:
+
+Automatically fill fields one by one with a typing/fill-in animation:
+
+From: Chennai
+
+Destination: Ooty
+
+Start date
+
+End date
+
+Travelers: 2
+
+Budget: ₹15,000
+
+Travel mode: Train + Road
+
+Interests: Nature, tea estates, viewpoints, local food
+
+Stay preference: Budget hotel / homestay
+
+Use Gemini with a sample prompt:
+
+“Plan a 3-day Chennai to Ooty trip under ₹15,000 for 2 travelers interested in nature, tea estates, viewpoints, and local food.”
+
+Gemini must return strict structured JSON:
+
+json
+{
+  "from": "",
+  "destination": "",
+  "startDate": "",
+  "endDate": "",
+  "travelers": 0,
+  "budget": 0,
+  "travelMode": "",
+  "interests": [],
+  "stayPreference": "",
+  "tripMode": "",
+  "itinerary": [
+    {
+      "day": 1,
+      "title": "",
+      "activities": [
+        {
+          "time": "",
+          "activity": "",
+          "location": "",
+          "estimatedCost": 0,
+          "travelRoute": "",
+          "notes": "",
+          "category": "",
+          "weatherDependency": ""
+        }
+      ],
+      "dayTotalCost": 0
+    }
+  ],
+  "estimatedTotalCost": 0,
+  "packingChecklist": [],
+  "safetyNotes": []
+}
+Show:
+
+Editable form fields after auto-fill.
+
+AI-generated day-by-day itinerary preview with timings, costs, routes, notes, activity category, and weather dependency.
+
+Estimated trip total with animated cost counter.
+
+Budget-fit indicator: Under budget / Near budget / Over budget.
+
+AI-generated packing checklist and safety notes.
+
+Option to regenerate itinerary with a different pace: Relaxed, Balanced, Packed.
+
+“Why this plan?” explanation from Gemini.
+
+A glowing Finish button that appears only when all required fields are filled.
+
+Clicking Finish saves data globally and navigates to Package.
+
+Page 2: Package
+Show 4 travel package cards based on the Planner budget:
+
+Budget
+
+Standard
+
+Premium
+
+Family
+
+Each card must include:
+
+Package name.
+
+Price.
+
+Transport details.
+
+Hotel details.
+
+Meals.
+
+Activities.
+
+Cancellation policy.
+
+Suitability note.
+
+Inclusions and exclusions.
+
+Refund estimate.
+
+Rating and review count.
+
+AI fit score out of 100.
+
+Prices must be realistic and consistent with the Planner budget. For a ₹15,000 budget:
+
+Budget: ₹9,800
+
+Standard: ₹12,400
+
+Premium: ₹16,900
+
+Family: ₹14,600
+
+Use Gemini to recommend one package and add an orange “Best for you” AI badge with a short reason.
+
+When a package is selected:
+
+Highlight its border.
+
+Show an animated tick.
+
+Update the price summary.
+
+Automatically slide up a Finish button.
+
+Save the selected package and navigate to Verification.
+
+Allow comparing up to two packages side by side.
+
+Page 3: Verification
+Split the page into two sections.
+
+Left: Trip Summary
+From, destination, dates, travelers, travel mode, interests, trip mode.
+
+Selected package details.
+
+Price breakdown: base price, taxes, discount, add-ons, total.
+
+Editable coupon field with mock coupon validation.
+
+Cancellation and refund policy summary.
+
+Right: Traveler Details
+Auto-fill realistic demo details for the first traveler.
+
+Add one traveler form per additional traveler.
+
+Fields:
+
+Full name
+
+Age
+
+Gender
+
+Phone
+
+Email
+
+ID type
+
+ID number
+
+Optional emergency contact
+
+Special assistance needs
+
+Meal preference
+
+Live validation:
+
+Required fields.
+
+Phone must be 10 digits.
+
+Email must be valid.
+
+ID number format based on ID type.
+
+Show green ticks for valid fields and clear red errors for invalid fields.
+
+Prevent submission until all travelers are valid.
+
+Payment
+Mock payment selector: UPI, Card, Net banking.
+
+No real payment.
+
+On Confirm:
+
+Show “Processing…” loader for 2 seconds.
+
+Then show full-screen success animation:
+
+Animated green tick circle.
+
+Confetti burst.
+
+Small low-poly plane flying across the screen.
+
+Text: “Your trip is successfully booked!”
+
+Generate booking ID: TP-2026-XXXX.
+
+Show trip summary and Continue button.
+
+Add notification: “Booking confirmed”.
+
+Navigate to Companion.
+
+Page 4: Companion
+Build a live travel dashboard for the active trip. Use a responsive card grid with collapsible sections on mobile.
+
+1. Today’s Itinerary Timeline
+Show current, completed, and upcoming activities.
+
+Highlight the live/current activity.
+
+Allow marking activities complete.
+
+Show delays, weather dependencies, and alternate options.
+
+Include a “Simulate trip time” control for demo purposes.
+
+2. Live Location Tracker
+Ask for location permission with a friendly explanation screen first.
+
+Use navigator.geolocation.watchPosition with enableHighAccuracy: true.
+
+Handle permission denied, GPS off, timeout, and low accuracy with clear messages.
+
+Show user position on a map with:
+
+Pulsing blue dot.
+
+Accuracy circle.
+
+Travelled path polyline.
+
+Reverse-geocoded current address.
+
+If Google Maps API key exists, use Google Maps JavaScript API; otherwise use Leaflet + OpenStreetMap.
+
+Show live info:
+
+Latitude
+
+Longitude
+
+Speed
+
+Accuracy
+
+Last updated time
+
+Battery level if available
+
+Distance travelled
+
+Estimated arrival time for next activity
+
+3. Live Location Sharing
+“Start Sharing Live Location” creates a unique tracking ID and shareable link: /track/{id}.
+
+Update location every 5–10 seconds.
+
+If Firebase is configured, store updates in Firebase Realtime Database or Firestore.
+
+If not configured, use localStorage/mock storage and show: “Mock sharing mode — Firebase not configured.”
+
+Create a read-only /track/{id} viewer page showing:
+
+Sender’s live marker.
+
+Last updated time.
+
+Speed.
+
+Accuracy.
+
+Open in Google Maps button.
+
+Sharing options:
+
+15 minutes
+
+1 hour
+
+Until trip ends
+
+Include Stop Sharing.
+
+Auto-expire sharing and delete mock data afterwards.
+
+Show banner: “Live sharing is ON”.
+
+Generate these Google Maps links:
+
+Location: https://www.google.com/maps/search/?api=1&query={lat},{lng}
+
+Directions: https://www.google.com/maps/dir/?api=1&destination={lat},{lng}&travelmode=driving
+
+Buttons:
+
+Copy link.
+
+Open in Google Maps.
+
+Share via WhatsApp: https://wa.me/?text={encoded message}.
+
+Share via SMS.
+
+Native Web Share API where supported.
+
+Message template:
+
+“I am here: {maps link}. Time: {time}. Sent from TripPilot AI.”
+
+4. Live Safety Mode
+Large red SOS button with ripple animation.
+
+On SOS:
+
+Capture current Google Maps location link.
+
+Prepare WhatsApp/SMS share links for trusted contacts.
+
+Show nearest hospital and police station from mock data.
+
+Start live sharing automatically.
+
+Add notifications.
+
+Show a calm, clear emergency checklist.
+
+Trusted contacts screen:
+
+Add, edit, remove up to 5 contacts.
+
+Save in localStorage.
+
+Mark one contact as primary.
+
+Safety alerts:
+
+“Journey started”
+
+“Reached destination”
+
+“Stopped for too long — Are you safe?”
+
+If no response in 60 seconds, trigger SOS flow.
+
+Never track in background without consent.
+
+Clearly show what is shared, with whom, and for how long.
+
+Allow stopping sharing at any time.
+
+Include quick-dial emergency numbers: 112, 108, 100, and local emergency contacts.
+
+5. Smart Road Risk Detection
+Show route risk score: Low, Medium, or High.
+
+Base score on mock weather, accident-prone zones, night travel, traffic, road type, ghat/hill roads, visibility, and time of day.
+
+Color coding:
+
+Green: Low
+
+Amber: Medium
+
+Red: High
+
+Show reasons for the score.
+
+Show 2 safer alternative routes with estimated extra time and distance.
+
+Include a small 3D low-poly car driving along a winding hill road.
+
+Road glows green, amber, or red based on risk level.
+
+Include a “Replan route” action that sends the user to Replanning.
+
+6. Destination Condition Intelligence
+Live status card for Ooty or selected destination:
+
+Weather.
+
+Temperature.
+
+Crowd level.
+
+Closures.
+
+Festival rush.
+
+Safety score.
+
+Best time to visit.
+
+Air quality where relevant.
+
+Local events.
+
+Use Gemini to generate a short traveler advisory in the selected language.
+
+7. Alternative Destination Finder
+If destination is crowded, unsafe, weather-affected, or over budget, suggest 3 similar alternatives.
+
+Each alternative must include:
+
+Name.
+
+Distance.
+
+Estimated budget.
+
+Why it is better.
+
+Similar experiences.
+
+Travel time.
+
+Safety level.
+
+One-tap “Replan here” action.
+
+Example alternatives for Ooty: Coonoor, Kodaikanal, Yercaud.
+
+8. Budget Tracker + Optimizer
+Preload sample expenses.
+
+Allow adding expenses with category, amount, note, date, and payment method.
+
+Show:
+
+Total budget.
+
+Spent.
+
+Remaining.
+
+Animated progress bar.
+
+Category-wise breakdown.
+
+Daily burn rate.
+
+Projected trip-end spend.
+
+When spending crosses budget:
+
+Show red alert.
+
+Add notification with amount exceeded.
+
+Use Gemini to suggest cheaper alternatives for hotels, food, transport, or activities.
+
+For Friends Trip, include group expense splitter with per-person balances and settlement suggestions.
+
+9. Voice Assistant
+Use Web Speech API for speech recognition and speech synthesis.
+
+Mic button in the search bar and Companion dashboard.
+
+User can say:
+
+“3 day trip to Ooty under 15000”
+
+“What is the weather in Ooty?”
+
+“Is my route safe?”
+
+“Find cheaper hotels”
+
+“Translate ‘Where is the nearest hospital?’ to Tamil”
+
+Send transcript to Gemini.
+
+Gemini returns a concise answer.
+
+App speaks the answer and shows it as text.
+
+Support hands-free follow-up questions.
+
+10. Voice Translator
+Let user choose source and target language.
+
+Supported languages: English, Tamil, Hindi, Telugu, Malayalam.
+
+User speaks a travel phrase.
+
+App shows translation as text and speaks it.
+
+Include common travel phrases:
+
+“Where is the nearest hospital?”
+
+“I need help.”
+
+“How much does this cost?”
+
+“Please call an auto.”
+
+“I am lost.”
+
+“Please speak slowly.”
+
+“I need a police station.”
+
+Allow saving favorite phrases offline.
+
+11. Offline Emergency Assistant
+Cache:
+
+Emergency numbers.
+
+First-aid guide.
+
+Nearby hospitals.
+
+Police stations.
+
+Saved itinerary.
+
+Trusted contacts.
+
+Hotel address and booking ID.
+
+Important phrases.
+
+Make the app a PWA with service worker and offline fallback page.
+
+Offline screen must still show emergency information, saved itinerary, contacts, maps links, and SOS actions.
+
+12. Emergency Healthcare & Doctor Assistance
+Symptom checker chat powered by Gemini.
+
+Show nearest hospital from mock data.
+
+Doctor call button using tel: link.
+
+Emergency call button using tel:108 or tel:112.
+
+Always show disclaimer:
+
+“This is not a medical diagnosis. In an emergency, call local emergency services immediately.”
+
+13. Group Travel Decision AI
+Allow friends to enter:
+
+Name
+
+Budget
+
+Interests
+
+Must-haves
+
+Deal-breakers
+
+Gemini proposes one balanced group plan.
+
+Show voting screen:
+
+Approve
+
+Suggest change
+
+Reject
+
+Show vote results and final decision.
+
+Include anonymous voting option.
+
+Show compromise explanation: whose preferences were prioritized and why.
+
+14. Street-Level Navigation
+Map view with step-by-step directions.
+
+Use Google Maps embed if API key is available, otherwise Leaflet + OpenStreetMap.
+
+Show:
+
+Start.
+
+Destination.
+
+Distance.
+
+ETA.
+
+Travel mode.
+
+Turn-by-turn instruction list.
+
+Include a bouncing 3D location pin that follows the user.
+
+Support walking, driving, bike, and public transport modes.
+
+Show fuel stops, rest points, tolls, and ghat-road warnings for road trips.
+
+Page 5: Replanning
+Build an AI disruption-management page.
+
+Detect or simulate disruptions:
+
+Flight delay or cancellation.
+
+Train delay.
+
+Road closure.
+
+Heavy rain, fog, landslide, or extreme heat.
+
+Hotel issue.
+
+Attraction closure.
+
+Medical emergency.
+
+Budget overrun.
+
+Crowd surge.
+
+Safety alert.
+
+For each disruption:
+
+Show what happened in plain language.
+
+Show impact on itinerary, cost, and safety.
+
+Ask Gemini for 2–3 replan options.
+
+Each option must include:
+
+New route or activity.
+
+Extra/removed cost.
+
+Time impact.
+
+Risk level.
+
+Trade-offs.
+
+Confidence score.
+
+Let user approve, edit, or reject a replan.
+
+On approval, update the global itinerary, budget, package summary, and notifications.
+
+Maintain a Replan history with before/after comparison.
+
+Page 6: Dossier
+Create a smart, shareable trip dossier.
+
+Include:
+
+Trip hero summary.
+
+Day-by-day itinerary.
+
+Booking ID and package details.
+
+Traveler list.
+
+Emergency contacts.
+
+Trusted contacts.
+
+Hospital and police information.
+
+Budget summary and expense breakdown.
+
+Safety advisories.
+
+Packing checklist.
+
+Offline maps links.
+
+Replan history.
+
+QR code linking to the live tracking page or trip dossier.
+
+Export as PDF.
+
+Share via WhatsApp, email, or native share.
+
+Available in the selected app language.
+
+Persistent AI Assistant
+Add a persistent Gemini-powered AI Assistant chatbot.
+
+The assistant appears as a floating chat button in the bottom-right corner of every page. When clicked, it opens as a modern glassmorphism sidebar/drawer on desktop and a full-screen bottom sheet on mobile.
+
+Assistant UI
+Floating button:
+
+Circular orange gradient button.
+
+Bot or Sparkles icon from Lucide.
+
+Subtle pulse animation.
+
+Tooltip: “Ask TripPilot AI” / Tamil: “TripPilot AI-ஐ கேளுங்கள்”.
+
+Small red notification dot when there is an unread trip alert.
+
+Chat sidebar:
+
+Header: “TripPilot AI Assistant”.
+
+Subtitle: “Your smart travel companion” / Tamil: “உங்கள் ஸ்மார்ட் பயணத் துணை”.
+
+Close button.
+
+Clear chat button.
+
+Voice input mic button.
+
+Voice output speaker toggle.
+
+Dark/light mode aware.
+
+Glassmorphism background.
+
+Smooth slide-in animation using Framer Motion.
+
+Mobile-first: full-screen bottom sheet with drag-to-close behavior.
+
+Chat bubbles:
+
+User messages: right-aligned, orange gradient.
+
+AI messages: left-aligned, translucent navy/white glass card.
+
+Typing indicator with animated dots.
+
+Support markdown-style responses: headings, bullet points, bold text, tables, and links.
+
+Auto-scroll.
+
+Suggested follow-up chips.
+
+Copy response button.
+
+“Apply to trip” action when the AI proposes an itinerary, hotel, route, or budget change.
+
+Assistant Capabilities
+The assistant must be context-aware and able to:
+
+Plan, revise, compare, and explain itineraries.
+
+Recommend destinations by Trip Mode, budget, dates, weather, and interests.
+
+Answer questions about the current trip.
+
+Explain route risk and suggest safer alternatives.
+
+Help reduce expenses.
+
+Translate phrases.
+
+Explain local customs, food, transport, and safety.
+
+Generate packing lists.
+
+Assist with group decisions.
+
+Trigger read-only demo actions such as “simulate rain”, “simulate train delay”, or “simulate budget overrun”.
+
+Always distinguish between live data, mock data, and AI-generated suggestions.
+
+Tamil Language Support
+Make Tamil a first-class language, not just a translation option.
+
+Supported languages:
+
+English
+
+தமிழ் (Tamil)
+
+Hindi
+
+Telugu
+
+Malayalam
+
+When Tamil is selected:
+
+Translate the entire UI into Tamil.
+
+Translate destination names, descriptions, trip modes, buttons, labels, alerts, notifications, itinerary content, and AI responses.
+
+Use proper Tamil typography with Noto Sans Tamil.
+
+Keep English technical terms where natural, such as GPS, Wi-Fi, ETA, SOS.
+
+Translate voice assistant prompts and replies into Tamil.
+
+Translate emergency messages, safety alerts, and offline first-aid content into Tamil.
+
+Examples:
+
+“Plan your trip” → “உங்கள் பயணத்தைத் திட்டமிடுங்கள்”
+
+“Family Trip” → “குடும்ப பயணம்”
+
+“Adventure Trip” → “சாஹச பயணம்”
+
+“Solo Ride” → “தனி பயணம்”
+
+“Friends Trip” → “நண்பர்களுடன் பயணம்”
+
+“Explore places” → “இடங்களை ஆராயுங்கள்”
+
+“Start Sharing Live Location” → “நேரலை இருப்பிடத்தைப் பகிரத் தொடங்குங்கள்”
+
+“Are you safe?” → “நீங்கள் பாதுகாப்பாக இருக்கிறீர்களா?”
+
+“Booking successful” → “பதிவு வெற்றிகரமாக முடிந்தது”
+
+Language switcher:
+
+Place in the top navigation and splash screen.
+
+Persist selected language in localStorage.
+
+Instantly update all text without page reload.
+
+Use React Context or an i18n library for translations.
+
+Quality, Security & Delivery Requirements
+Deliver a complete, runnable Google AI Studio project.
+
+Organize code into reusable components, hooks, services, stores, mock-data modules, and i18n files.
+
+Use TypeScript-style prop clarity or JSDoc comments where helpful.
+
+Handle all Gemini failures with fallback data, retry options, and clear messaging.
+
+Never expose secrets in client-side code; use AI Studio server-side secrets or environment variables.
+
+Add request timeouts, loading skeletons, and user-friendly errors.
+
+Ensure the app works well on small Android phones, tablets, and desktop.
+
+Make the demo fully explorable without login, paid APIs, or real payment.
+
+Prioritize privacy: location sharing must be explicit, time-limited, stoppable, and clearly explained.
+
+The final result should feel polished, premium, fast, accessible, and genuinely useful for Indian travelers.
+
+Gemini API keys should be treated as secrets: Google recommends environment variables and warns against exposing keys in client-side production code; AI Studio can manage GEMINI_API_KEY as a server-side secret.
+
+Give me the enhanced prompt for all the features mentioned above to give to Google ai studio and get the complete working app
+
+
+Below is the final, consolidated prompt. Paste it into Google AI Studio as one instruction; it asks for a complete, runnable app with all planning, booking, safety, replanning, multilingual, and signature 3D features. AI Studio can keep GEMINI_API_KEY as a server-side secret so it is never exposed in browser code.
+
+Build TripPilot AI — Complete Production-Quality AI Travel App
+Build TripPilot AI, a responsive, production-quality, AI-native travel planning, booking, live-safety, intelligent replanning, and trip-companion web app in Google AI Studio.
+
+TripPilot AI should feel like a premium travel marketplace such as MakeMyTrip, but powered by an autonomous AI travel agent that plans personalized trips, compares and books packages, monitors journeys live, detects risks, translates languages, manages group decisions, controls budget, and automatically replans when disruptions occur.
+
+The app must be fully usable as a polished demo without login, real payments, or paid travel APIs.
+
+Tech Stack
+Use:
+
+React + Vite-style app structure inside Google AI Studio.
+
+Tailwind CSS for all styling.
+
+Framer Motion for transitions and micro-interactions.
+
+React Three Fiber and @react-three/drei for animated low-poly 3D scenes.
+
+Zustand for global state.
+
+React Router for routing.
+
+Recharts for budget and analytics charts.
+
+Lucide React for icons.
+
+Gemini API for planning, recommendations, chat, translation, advisories, replanning, and voice assistance.
+
+Google Maps JavaScript API when a Maps key is available; otherwise Leaflet + OpenStreetMap.
+
+Web Speech API for speech recognition and speech synthesis.
+
+Service worker + web manifest for PWA/offline emergency mode.
+
+LocalStorage for preferences, contacts, recent searches, mock sharing, and saved trips.
+
+Optional Firebase Realtime Database/Firestore for real cross-device live-location sharing; if not configured, use mock storage.
+
+Use realistic mock data for flights, trains, buses, hotels, packages, weather, traffic, hospitals, police stations, road risk, fuel stops, expenses, attractions, local food, and emergency services.
+
+Do not hardcode API keys. Use AI Studio Secrets or environment variables. Make Gemini calls from server-side code or API routes so GEMINI_API_KEY is never exposed to the browser. If Gemini fails, is rate-limited, or unavailable, gracefully fall back to realistic hardcoded demo data and show a small “Demo data” badge.
+
+Core Experience
+TripPilot AI is a 6-step guided travel operating system:
+
+Planner
+
+Package
+
+Verification
+
+Companion
+
+Replanning
+
+Dossier
+
+Show a top stepper/progress bar on every main page:
+
+Current step highlighted.
+
+Completed steps show a green tick.
+
+Future steps locked until the previous step is complete, except Companion after booking.
+
+All trip data stored in one global Zustand store.
+
+Page transitions use Framer Motion slide + fade.
+
+Form data persists across navigation.
+
+Include a Demo Mode toggle that preloads a 3-day Chennai to Ooty trip under ₹15,000 for 2 travelers.
+
+Include a safe Reset demo action.
+
+Brand & Design System
+Create an “Aero Premium” travel-tech design language:
+
+Primary navy: #0B1F3A
+
+Accent orange: #FF7A1A
+
+Safe/success teal: #14B8A6
+
+Warning amber: #F59E0B
+
+Danger/SOS red: #EF4444
+
+Light background: #F5F8FC
+
+Dark background: #071427
+
+Design rules:
+
+Poppins for headings, Inter for body, Noto Sans Tamil for Tamil UI.
+
+20px rounded corners and 8px spacing grid.
+
+Glassmorphism cards: translucent white/navy surfaces, backdrop blur, soft shadows, subtle blue-orange gradients.
+
+Mobile-first responsive layout: bottom navigation on mobile, top navigation on desktop.
+
+Dark/light mode toggle persisted in localStorage.
+
+Lucide icons everywhere.
+
+Framer Motion animations: staggered fade-up, slide transitions, soft bounce, animated counters, and progress rings.
+
+Accessible tap targets, visible focus states, aria labels, semantic HTML, keyboard navigation, color contrast, and prefers-reduced-motion support.
+
+Skeleton loaders, empty states, error states, retry buttons, and toast notifications for every async action.
+
+No layout shift, clipped text, or horizontal scrolling on mobile.
+
+Splash Screen
+On first visit per browser session, show a 3.5-second cinematic splash screen with a Skip button.
+
+Sequence:
+
+Dark navy screen with a glowing low-poly 3D Earth fading in and rotating.
+
+India highlighted in orange.
+
+A low-poly aeroplane flies in a curved arc around the globe, leaving a glowing orange trail.
+
+Draw flight route lines between Chennai, Delhi, Mumbai, and Kolkata.
+
+“TripPilot AI” logo scales up with a soft bounce.
+
+Tagline fades in: “Plan. Travel. Replan. Stay safe.”
+
+Progress bar fills while the app loads.
+
+Splash slides upward like a curtain to reveal the home screen.
+
+Build all 3D models from simple low-poly geometry only. No external GLTF/model files. Provide a simplified static splash for reduced-motion users.
+
+Global Search & Trip Mode
+Place a powerful global search bar at the top with a Trip Mode selector immediately beside it.
+
+Destination Database
+Include global, Indian, and Tamil Nadu destinations.
+
+Global destinations:
+
+Dubai, Singapore, Bali, Bangkok, Kuala Lumpur, Maldives, Kathmandu, Colombo, London, Paris, Tokyo, Sydney, New York, Istanbul, Zurich.
+
+India destinations:
+
+Chennai, Coimbatore, Madurai, Trichy, Salem, Erode, Thanjavur, Rameswaram, Kanyakumari, Kodaikanal, Ooty, Yercaud, Valparai, Munnar, Wayanad, Coorg, Goa, Manali, Leh-Ladakh, Jaipur, Udaipur, Varanasi, Rishikesh, Andaman Islands, Kerala Backwaters, Darjeeling, Shillong, Meghalaya.
+
+Tamil Nadu special places:
+
+Chennai, Mahabalipuram, Pondicherry, Chettinad, Thanjavur, Madurai, Rameswaram, Kanyakumari, Kodaikanal, Ooty, Coonoor, Valparai, Yercaud, Kolli Hills, Courtallam, Hogenakkal, Dhanushkodi, Vandalur Zoo, Guindy National Park, Cholamandalam Artists’ Village.
+
+For every destination store:
+
+English and Tamil name.
+
+State/country.
+
+Short English and Tamil description.
+
+Best season.
+
+Budget level.
+
+Popular activities.
+
+Nearby attractions.
+
+Safety level.
+
+Suitable trip modes.
+
+Suggested stay areas.
+
+Local food highlights.
+
+Accessibility notes where relevant.
+
+Search features:
+
+English and Tamil typing.
+
+Fuzzy matching and typo tolerance.
+
+Popular destination chips.
+
+Recent searches.
+
+“Near me” suggestions using geolocation.
+
+AI destination suggestions based on trip mode, budget, days, season, interests, and weather.
+
+Voice search.
+
+Keyboard navigation and clear no-results state.
+
+Trip Mode Planner
+Add horizontally scrollable Trip Mode pills beside the search bar:
+
+Family Trip — குடும்ப பயணம்
+
+Adventure — சாஹச பயணம்
+
+Solo Ride — தனி பயணம்
+
+Friends Trip — நண்பர்களுடன் பயணம்
+
+Honeymoon — தேனிலவு பயணம்
+
+Pilgrimage — புனித யாத்திரை
+
+Food Tour — உணவு சுற்றுலா
+
+Nature Escape — இயற்கை பயணம்
+
+Bike Trip — பைக் பயணம்
+
+Weekend Getaway — வார இறுதி சுற்றுலா
+
+Budget Trip — சிக்கன பயணம்
+
+Luxury Trip — ஆடம்பர பயணம்
+
+Each pill needs an icon, English label, Tamil label, and glowing selected state.
+
+Trip mode must affect destination suggestions, itinerary, activities, hotels, safety tips, packing list, and estimated costs:
+
+Family Trip: family-safe destinations, hotels, parks, temples, beaches, zoos, sightseeing, child/elder tips; avoid extreme adventure by default.
+
+Adventure: trekking, camping, rafting, paragliding, scuba, bike routes; difficulty, gear checklist, weather warnings, emergency contacts.
+
+Solo Ride: safe solo routes, hostels, bike rentals, solo-friendly cafes; stronger safety features, live sharing, SOS, trusted contacts, check-ins, night warnings.
+
+Friends Trip: group activities, nightlife, beaches, road trips, adventure sports, budget stays, group expense splitter.
+
+Honeymoon: romantic resorts, private beaches, hill stations, sunset points, privacy, luxury stays, couple activities.
+
+Pilgrimage: temples, pilgrimage circuits, darshan timings, accommodation near temples; include Rameswaram, Madurai, Thanjavur, Kanyakumari, Varanasi, Tirupati.
+
+Food Tour: local foods, street-food areas, restaurants, food trails; include Chettinad chicken, filter coffee, Madurai jigarthanda, Kanyakumari fish curry, Thanjavur meals.
+
+Bike Trip: scenic routes, fuel stops, rest points, weather, road conditions, riding time, helmet/safety reminders.
+
+Weekend Getaway: destinations within 100–300 km and quick 2-day itineraries.
+
+Budget Trip: low-cost destinations, hostels, public transport, street food.
+
+Luxury Trip: 5-star hotels, private transfers, fine dining, premium experiences.
+
+Page 1: Planner
+Create an AI-assisted trip planner.
+
+In Demo Mode, auto-fill fields one by one with typing/fill-in animation:
+
+From: Chennai
+
+Destination: Ooty
+
+Start date
+
+End date
+
+Travelers: 2
+
+Budget: ₹15,000
+
+Travel mode: Train + Road
+
+Interests: Nature, tea estates, viewpoints, local food
+
+Stay preference: Budget hotel / homestay
+
+Use Gemini with this sample prompt:
+
+“Plan a 3-day Chennai to Ooty trip under ₹15,000 for 2 travelers interested in nature, tea estates, viewpoints, and local food.”
+
+Gemini must return strict JSON:
+
+json
+{
+  "from": "",
+  "destination": "",
+  "startDate": "",
+  "endDate": "",
+  "travelers": 0,
+  "budget": 0,
+  "travelMode": "",
+  "interests": [],
+  "stayPreference": "",
+  "tripMode": "",
+  "itinerary": [
+    {
+      "day": 1,
+      "title": "",
+      "activities": [
+        {
+          "time": "",
+          "activity": "",
+          "location": "",
+          "estimatedCost": 0,
+          "travelRoute": "",
+          "notes": "",
+          "category": "",
+          "weatherDependency": ""
+        }
+      ],
+      "dayTotalCost": 0
+    }
+  ],
+  "estimatedTotalCost": 0,
+  "packingChecklist": [],
+  "safetyNotes": []
+}
+Show:
+
+Editable form fields after auto-fill.
+
+AI day-by-day itinerary preview with timings, costs, routes, notes, category, and weather dependency.
+
+Estimated total with animated cost counter.
+
+Budget-fit indicator: Under budget / Near budget / Over budget.
+
+AI packing checklist and safety notes.
+
+Regenerate itinerary with pace options: Relaxed, Balanced, Packed.
+
+“Why this plan?” explanation from Gemini.
+
+Glowing Finish button enabled only when required fields are complete.
+
+Finish saves data globally and navigates to Package.
+
+Page 2: Package
+Show 4 package cards based on Planner budget:
+
+Budget
+
+Standard
+
+Premium
+
+Family
+
+Each card includes:
+
+Package name.
+
+Price.
+
+Transport details.
+
+Hotel details.
+
+Meals.
+
+Activities.
+
+Cancellation policy.
+
+Suitability note.
+
+Inclusions/exclusions.
+
+Refund estimate.
+
+Rating and review count.
+
+AI fit score out of 100.
+
+For a ₹15,000 budget use:
+
+Budget: ₹9,800
+
+Standard: ₹12,400
+
+Premium: ₹16,900
+
+Family: ₹14,600
+
+Use Gemini to recommend one package with an orange “Best for you” badge and short reason.
+
+On selection:
+
+Highlight border.
+
+Animated tick.
+
+Update price summary.
+
+Slide up Finish button.
+
+Save package and navigate to Verification.
+
+Allow comparing two packages side by side.
+
+Page 3: Verification
+Split into two sections.
+
+Trip Summary
+From, destination, dates, travelers, travel mode, interests, trip mode.
+
+Selected package details.
+
+Price breakdown: base price, taxes, discount, add-ons, total.
+
+Editable coupon field with mock validation.
+
+Cancellation/refund policy summary.
+
+Traveler Details
+Auto-fill realistic demo details for traveler 1.
+
+Add one form per additional traveler.
+
+Fields: full name, age, gender, phone, email, ID type, ID number, optional emergency contact, special assistance needs, meal preference.
+
+Live validation:
+
+Required fields.
+
+10-digit phone.
+
+Valid email.
+
+ID format based on ID type.
+
+Green ticks for valid fields, red errors for invalid fields.
+
+Block submission until all travelers are valid.
+
+Mock Payment
+UPI, Card, Net banking selector.
+
+No real payment.
+
+On Confirm:
+
+“Processing…” loader for 2 seconds.
+
+Full-screen success animation: animated green tick, confetti, low-poly plane flying across screen.
+
+Text: “Your trip is successfully booked!”
+
+Generate booking ID TP-2026-XXXX.
+
+Show trip summary and Continue.
+
+Notification: “Booking confirmed”.
+
+Navigate to Companion.
+
+Page 4: Companion
+Build a live travel dashboard with responsive glass cards.
+
+Today’s Itinerary Timeline
+Current, completed, upcoming activities.
+
+Highlight live activity.
+
+Mark activities complete.
+
+Show delays, weather dependencies, alternatives.
+
+Include “Simulate trip time” demo control.
+
+Live Location Tracker
+Friendly permission explanation before requesting location.
+
+Use navigator.geolocation.watchPosition with enableHighAccuracy: true.
+
+Handle permission denied, GPS off, timeout, low accuracy.
+
+Map shows pulsing blue dot, accuracy circle, travelled polyline, reverse-geocoded address.
+
+Google Maps if key exists; otherwise Leaflet + OpenStreetMap.
+
+Show latitude, longitude, speed, accuracy, last updated time, battery level if available, distance travelled, ETA to next activity.
+
+Live Location Sharing
+“Start Sharing Live Location” creates unique tracking ID and /track/{id} link.
+
+Update every 5–10 seconds.
+
+Firebase if configured; otherwise localStorage/mock storage with banner: “Mock sharing mode — Firebase not configured.”
+
+Read-only /track/{id} viewer: live marker, last updated time, speed, accuracy, Open in Google Maps.
+
+Durations: 15 minutes, 1 hour, until trip ends.
+
+Stop Sharing and auto-expiry with mock-data deletion.
+
+Banner: “Live sharing is ON”.
+
+Google Maps links:
+
+Location: https://www.google.com/maps/search/?api=1&query={lat},{lng}
+
+Directions: https://www.google.com/maps/dir/?api=1&destination={lat},{lng}&travelmode=driving
+
+Buttons:
+
+Copy link.
+
+Open in Google Maps.
+
+WhatsApp: https://wa.me/?text={encoded message}.
+
+SMS.
+
+Native Web Share API where supported.
+
+Message:
+
+“I am here: {maps link}. Time: {time}. Sent from TripPilot AI.”
+
+Live Safety Mode
+Large red SOS button with ripple animation.
+
+On SOS:
+
+Capture Google Maps location link.
+
+Prepare WhatsApp/SMS links for trusted contacts.
+
+Show nearest hospital and police station from mock data.
+
+Start live sharing automatically.
+
+Add notifications.
+
+Show calm emergency checklist.
+
+Trusted contacts: add/edit/remove up to 5, localStorage, one primary contact.
+
+Alerts: “Journey started”, “Reached destination”, “Stopped for too long — Are you safe?”; no response in 60 seconds triggers SOS flow.
+
+Never track in background without consent.
+
+Clearly show what is shared, with whom, and for how long.
+
+Stop sharing anytime.
+
+Quick-dial 112, 108, 100.
+
+Smart Road Risk Detection
+Risk score: Low, Medium, High.
+
+Based on mock weather, accident-prone zones, night travel, traffic, road type, ghat/hill roads, visibility, time of day.
+
+Green/amber/red coding.
+
+Show reasons.
+
+Two safer alternative routes with extra time/distance.
+
+Small 3D low-poly car on winding hill road; road glows by risk.
+
+“Replan route” action navigates to Replanning.
+
+Destination Condition Intelligence
+For Ooty or selected destination:
+
+Weather, temperature, crowd level, closures, festival rush, safety score, best time to visit, air quality where relevant, local events.
+
+Gemini traveler advisory in selected language.
+
+Alternative Destination Finder
+If crowded, unsafe, weather-affected, or over budget, suggest 3 alternatives:
+
+Name.
+
+Distance.
+
+Estimated budget.
+
+Why better.
+
+Similar experiences.
+
+Travel time.
+
+Safety level.
+
+One-tap “Replan here”.
+
+Ooty examples: Coonoor, Kodaikanal, Yercaud.
+
+Budget Tracker + Optimizer
+Preloaded sample expenses.
+
+Add expense: category, amount, note, date, payment method.
+
+Show total budget, spent, remaining, animated progress, category breakdown, daily burn rate, projected trip-end spend.
+
+Over-budget red alert and notification.
+
+Gemini cheaper alternatives for hotels, food, transport, activities.
+
+Friends Trip: group expense splitter with balances and settlement suggestions.
+
+Voice Assistant
+Web Speech API recognition and synthesis.
+
+Mic in search bar and Companion.
+
+Example commands:
+
+“3 day trip to Ooty under 15000”
+
+“What is the weather in Ooty?”
+
+“Is my route safe?”
+
+“Find cheaper hotels”
+
+“Translate ‘Where is the nearest hospital?’ to Tamil”
+
+Send transcript to Gemini, show concise answer, speak it, support follow-ups.
+
+Voice Translator
+Source/target languages: English, Tamil, Hindi, Telugu, Malayalam.
+
+Speak phrase, show translation, speak translation.
+
+Include phrases:
+
+“Where is the nearest hospital?”
+
+“I need help.”
+
+“How much does this cost?”
+
+“Please call an auto.”
+
+“I am lost.”
+
+“Please speak slowly.”
+
+“I need a police station.”
+
+Save favorite phrases offline.
+
+Offline Emergency Assistant
+Cache:
+
+Emergency numbers.
+
+First-aid guide.
+
+Nearby hospitals.
+
+Police stations.
+
+Saved itinerary.
+
+Trusted contacts.
+
+Hotel address and booking ID.
+
+Important phrases.
+
+PWA with service worker and offline fallback. Offline screen must still show emergency information, itinerary, contacts, map links, and SOS actions.
+
+Emergency Healthcare & Doctor Assistance
+Gemini symptom-checker chat.
+
+Nearest hospital from mock data.
+
+Doctor call via tel:.
+
+Emergency call via tel:108 or tel:112.
+
+Disclaimer:
+
+“This is not a medical diagnosis. In an emergency, call local emergency services immediately.”
+
+Group Travel Decision AI
+Friends enter name, budget, interests, must-haves, deal-breakers.
+
+Gemini proposes balanced group plan.
+
+Voting: Approve, Suggest change, Reject.
+
+Show results and final decision.
+
+Anonymous voting option.
+
+Compromise explanation.
+
+Street-Level Navigation
+Map with step-by-step directions.
+
+Google Maps embed if key exists; otherwise Leaflet + OpenStreetMap.
+
+Start, destination, distance, ETA, travel mode, turn-by-turn list.
+
+Bouncing 3D pin follows user.
+
+Walking, driving, bike, public transport modes.
+
+Fuel stops, rest points, tolls, ghat-road warnings.
+
+Page 5: Replanning
+Detect or simulate disruptions:
+
+Flight delay/cancellation.
+
+Train delay.
+
+Road closure.
+
+Heavy rain, fog, landslide, extreme heat.
+
+Hotel issue.
+
+Attraction closure.
+
+Medical emergency.
+
+Budget overrun.
+
+Crowd surge.
+
+Safety alert.
+
+For each disruption:
+
+Plain-language explanation.
+
+Impact on itinerary, cost, safety.
+
+Gemini proposes 2–3 replan options.
+
+Each option: new route/activity, cost change, time impact, risk level, trade-offs, confidence score.
+
+Approve, edit, or reject.
+
+Approval updates global itinerary, budget, package summary, notifications.
+
+Maintain Replan History with before/after comparison.
+
+Page 6: Dossier
+Create a shareable smart trip dossier:
+
+Trip hero summary.
+
+Day-by-day itinerary.
+
+Booking ID and package details.
+
+Traveler list.
+
+Emergency/trusted contacts.
+
+Hospital and police information.
+
+Budget and expense breakdown.
+
+Safety advisories.
+
+Packing checklist.
+
+Offline map links.
+
+Replan history.
+
+QR code to live tracking/dossier.
+
+PDF export.
+
+WhatsApp/email/native share.
+
+Available in selected language.
+
+Persistent AI Assistant
+Add a floating Gemini-powered assistant on every page.
+
+Floating button:
+
+Circular orange gradient.
+
+Bot/Sparkles Lucide icon.
+
+Pulse animation.
+
+Tooltip: “Ask TripPilot AI” / “TripPilot AI-ஐ கேளுங்கள்”.
+
+Red dot for unread trip alert.
+
+Chat UI:
+
+Desktop: glass sidebar/drawer.
+
+Mobile: full-screen bottom sheet with drag-to-close.
+
+Header: “TripPilot AI Assistant”.
+
+Subtitle: “Your smart travel companion” / “உங்கள் ஸ்மார்ட் பயணத் துணை”.
+
+Close, clear chat, mic, speaker toggle.
+
+Dark/light aware.
+
+Framer Motion slide-in.
+
+User bubbles right-aligned orange gradient; AI bubbles left-aligned glass cards.
+
+Typing indicator, markdown support, auto-scroll, suggested follow-ups, copy response.
+
+“Apply to trip” when AI proposes itinerary/hotel/route/budget change.
+
+Assistant capabilities:
+
+Plan, revise, compare, explain itineraries.
+
+Recommend destinations by Trip Mode, budget, dates, weather, interests.
+
+Answer current-trip questions.
+
+Explain route risk and safer alternatives.
+
+Reduce expenses.
+
+Translate phrases.
+
+Explain local customs, food, transport, safety.
+
+Generate packing lists.
+
+Assist group decisions.
+
+Trigger demo simulations: rain, train delay, budget overrun.
+
+Clearly distinguish live data, mock data, and AI suggestions.
+
+Signature Animated 3D Experiences
+Create unique animated 3D features using React Three Fiber and low-poly code-generated geometry only. No external GLTF files. Every scene must be interactive, mobile-friendly, state-aware, lazy loaded, performant, and provide a reduced-motion/low-end fallback.
+
+Use shared geometries/materials, instancing, delta-based useFrame, refs instead of React state inside animation loops, adaptive pixel ratio, and pause/off-screen rendering.
+
+Living Trip Globe
+Low-poly rotating Earth.
+
+India/Tamil Nadu/selected destination glow orange.
+
+Searching a destination sends a tiny plane from “From” to destination with glowing dashed route.
+
+Destination pins selectable.
+
+Demo Mode animates Chennai → Ooty with a small train.
+
+AI Itinerary Constellation
+Each day is an orbital cluster.
+
+Activities are connected glowing nodes.
+
+Current activity pulses orange; completed teal.
+
+Expensive activities larger.
+
+Weather-dependent nodes show cloud/sun/rain icons.
+
+Drag to rotate; tap node for details.
+
+Regeneration dissolves old nodes into particles and assembles new ones.
+
+Package Comparison Airships
+Four floating low-poly airships for Budget, Standard, Premium, Family.
+
+Distinct shapes/colors and gentle bobbing.
+
+Hover/tap moves airship forward and reveals details.
+
+AI-recommended package has glowing “Best for you” ring and drone with flag.
+
+Selected airship flies toward booking page.
+
+Booking Launch Sequence
+Low-poly plane on animated runway.
+
+Accelerates, lifts off, passes through orange particle ring.
+
+Green checkmark forms from particle trails.
+
+Confetti and floating holographic booking ID.
+
+Plane flies toward Companion.
+
+Live Journey Diorama
+Miniature low-poly route landscape: hills, roads, trees, tea estates, water, buildings, moving vehicle.
+
+Vehicle progresses with trip progress.
+
+Weather changes scene: sun, clouds, rain, fog.
+
+Risk changes road glow green/amber/red.
+
+Simulated disruption adds fallen tree, cones, fog, or barrier; vehicle takes safer detour.
+
+Tap to expand full-screen route view.
+
+Safety Guardian Aura
+Rotating translucent low-poly shield around traveler avatar.
+
+Teal pulse when sharing ON.
+
+Amber for Medium risk.
+
+Red expanding rings for High risk/SOS.
+
+Trusted contacts orbit as small avatars.
+
+Tap contact for emergency actions.
+
+Budget Flow River
+3D river width represents remaining budget.
+
+Orange coins flow downstream as expenses are added.
+
+Category objects float: hotel, food, transport, activity, shopping.
+
+Near-limit river narrows/turns amber.
+
+Overspending turns red with overflowing coins.
+
+Gemini savings suggestions appear as tappable saving bubbles.
+
+Replan Time Machine
+Low-poly tunnel with original route and alternate routes.
+
+Vehicle travels through tunnel.
+
+Selecting replan option bends tunnel toward that route.
+
+Floating labels show cost/time/risk differences.
+
+Approval creates teal portal.
+
+Destination Weather Portal
+Circular 3D portal with miniature animated destination scene.
+
+Ooty: hills, tea bushes, mist, toy train.
+
+Goa: waves, umbrella, sunset.
+
+Rameswaram: sea, bridge, temple towers, wind.
+
+Leh-Ladakh: mountains, prayer flags, clear sky.
+
+Dubai: skyline and dunes.
+
+Portal reacts to weather: rain, fog, snow, heat shimmer, clouds.
+
+Group Decision Orbit
+Friends as low-poly avatars orbiting a trip-plan planet.
+
+Colors: teal approve, amber suggest change, red reject.
+
+Gemini plan reshapes planet to reflect compromise.
+
+Final decision triggers orange particle celebration.
+
+Tamil Nadu Heritage Rail
+Signature low-poly heritage train through miniature Tamil Nadu.
+
+Passes Madurai temple towers, Thanjavur Big Temple, Chettinad mansions, Rameswaram sea bridge, Kanyakumari shoreline, Ooty tea hills.
+
+Landmarks light up on hover/tap.
+
+Tap opens destination details in English and Tamil.
+
+AI Assistant Companion Orb
+Floating 3D orb with glowing core.
+
+Orbiting particles represent itinerary, safety, budget, translation, navigation.
+
+Thinking state pulses/spins faster.
+
+Unread alert turns amber/red.
+
+Opens into chat sidebar/bottom sheet.
+
+Slightly draggable but returns to corner.
+
+Tamil Language Support
+Make Tamil a first-class language.
+
+Supported languages:
+
+English
+
+தமிழ் (Tamil)
+
+Hindi
+
+Telugu
+
+Malayalam
+
+When Tamil is selected:
+
+Translate entire UI, destination names, descriptions, trip modes, buttons, labels, alerts, notifications, itinerary content, and AI responses.
+
+Use Noto Sans Tamil.
+
+Keep natural English technical terms: GPS, Wi-Fi, ETA, SOS.
+
+Translate voice prompts/replies, emergency messages, safety alerts, and offline first-aid content.
+
+Examples:
+
+“Plan your trip” → “உங்கள் பயணத்தைத் திட்டமிடுங்கள்”
+
+“Family Trip” → “குடும்ப பயணம்”
+
+“Adventure Trip” → “சாஹச பயணம்”
+
+“Solo Ride” → “தனி பயணம்”
+
+“Friends Trip” → “நண்பர்களுடன் பயணம்”
+
+“Explore places” → “இடங்களை ஆராயுங்கள்”
+
+“Start Sharing Live Location” → “நேரலை இருப்பிடத்தைப் பகிரத் தொடங்குங்கள்”
+
+“Are you safe?” → “நீங்கள் பாதுகாப்பாக இருக்கிறீர்களா?”
+
+“Booking successful” → “பதிவு வெற்றிகரமாக முடிந்தது”
+
+Language switcher:
+
+In top navigation and splash screen.
+
+Persist in localStorage.
+
+Instantly update all text without reload.
+
+Use React Context or i18n library.
+
+Quality, Security & Delivery
+Deliver a complete, runnable Google AI Studio project with:
+
+Reusable components, hooks, services, Zustand stores, mock-data modules, i18n files, and API/service-layer separation.
+
+Gemini request timeouts, retries, loading skeletons, and fallback data.
+
+Server-side Gemini calls using AI Studio Secrets; never expose keys in client code.
+
+Full mobile, tablet, and desktop responsiveness.
+
+Fast performance, accessible interactions, and polished visual design.
+
+Fully explorable demo without login, paid APIs, or real payment.
+
+Explicit, time-limited, stoppable location sharing with clear privacy explanations.
+
+A premium, fast, accessible app that feels genuinely useful for Indian and Tamil-speaking travelers.

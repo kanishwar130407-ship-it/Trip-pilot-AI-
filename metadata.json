@@ -1,0 +1,11 @@
+{
+  "name": "TripPilot AI - Autonomous Travel Agent & Companion",
+  "description": "Production-quality AI-native travel planning, booking, live safety, intelligent replanning, and trip companion with multilingual support and 3D visual experiences.",
+  "requestFramePermissions": [
+    "geolocation",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
