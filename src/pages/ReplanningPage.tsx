@@ -15,12 +15,14 @@ import {
   Train,
   Sliders,
   DollarSign,
+  HelpCircle,
 } from 'lucide-react';
 import { useTripStore } from '../store/useTripStore';
 import { DISRUPTION_PRESETS } from '../data/mockTripData';
 import { ReplanOption } from '../types/trip';
 import { replanWithAi } from '../services/apiService';
 import { translations } from '../i18n/translations';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const ReplanningPage: React.FC = () => {
   const language = useTripStore((s) => s.language);
@@ -34,6 +36,7 @@ export const ReplanningPage: React.FC = () => {
   const dismissDisruption = useTripStore((s) => s.dismissDisruption);
   const plannerForm = useTripStore((s) => s.plannerForm);
   const estimatedTotalCost = useTripStore((s) => s.estimatedTotalCost);
+  const openHelpSheet = useTripStore((s) => s.openHelpSheet);
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [appliedNotice, setAppliedNotice] = useState<string | null>(null);
@@ -47,17 +50,29 @@ export const ReplanningPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-[#0B1F3A] to-[#FF7A1A]/20 p-6 rounded-3xl border border-slate-800 text-white shadow-xl">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF7A1A]/20 border border-[#FF7A1A]/40 text-[#FF7A1A] text-xs font-semibold uppercase tracking-wider mb-2">
-          <RefreshCw className="w-3.5 h-3.5 animate-spin-slow" />
-          <span>Autonomous AI Disruption Management</span>
+      <div className="bg-gradient-to-r from-slate-900 via-[#0B1F3A] to-[#FF7A1A]/20 p-6 rounded-3xl border border-slate-800 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF7A1A]/20 border border-[#FF7A1A]/40 text-[#FF7A1A] text-xs font-semibold uppercase tracking-wider mb-2">
+            <RefreshCw className="w-3.5 h-3.5 animate-spin-slow" />
+            <span>Autonomous AI Disruption Management</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              {t.replanning.title}
+            </h1>
+            <button
+              type="button"
+              onClick={() => openHelpSheet('replanning')}
+              className="p-1.5 rounded-full bg-slate-800 text-slate-300 hover:text-white"
+              title="Learn about AI Replanning"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-300 mt-1">
+            {t.replanning.subtitle}
+          </p>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-          {t.replanning.title}
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-300 mt-1">
-          {t.replanning.subtitle}
-        </p>
       </div>
 
       {/* Applied Notice */}
@@ -231,15 +246,11 @@ export const ReplanningPage: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="p-8 text-center rounded-3xl bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-slate-800 space-y-2">
-          <ShieldCheck className="w-10 h-10 text-teal-500 mx-auto" />
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-            All Routes Clear & On Schedule
-          </h3>
-          <p className="text-xs text-slate-500 max-w-md mx-auto">
-            Zero active weather or transport disruptions detected on Chennai to Ooty route. Click any simulation event above to test instant replanning.
-          </p>
-        </div>
+        <EmptyState
+          type="replanning"
+          onPrimaryAction={() => triggerDisruption('d1')}
+          onSecondaryAction={() => openHelpSheet('replanning')}
+        />
       )}
 
       {/* Replan History Audit Trail */}

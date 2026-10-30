@@ -25,7 +25,14 @@ const getGeminiClient = () => {
   if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
     return null;
   }
-  return new GoogleGenAI({ apiKey });
+  return new GoogleGenAI({
+    apiKey,
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
+      },
+    },
+  });
 };
 
 // 1. Plan endpoint
@@ -78,7 +85,7 @@ Return ONLY strict valid JSON matching this exact structure, with no markdown, n
 }`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.8-flash',
         contents: prompt,
       });
 
@@ -276,7 +283,7 @@ Give a concise, helpful, and actionable answer. If relevant, include:
 Respond in ${language === 'ta' ? 'natural, fluent Tamil (with English technical terms like GPS, ETA, SOS)' : 'English'}.`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.8-flash',
         contents: prompt,
       });
 
@@ -343,7 +350,7 @@ Propose 2 realistic replan options with trade-offs and confidence scores. Return
   ]
 }`;
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.8-flash',
         contents: prompt,
       });
 
@@ -396,7 +403,7 @@ app.post('/api/gemini/translate', async (req: Request, res: Response) => {
       const prompt = `Translate this travel phrase from ${fromLang} to ${toLang}. Return ONLY the direct translated phrase without commentary:
 "${phrase}"`;
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.8-flash',
         contents: prompt,
       });
       return res.json({ source: 'gemini', translation: response.text?.trim() });

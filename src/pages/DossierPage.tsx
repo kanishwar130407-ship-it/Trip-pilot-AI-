@@ -15,10 +15,12 @@ import {
   MessageCircle,
   Mail,
   Copy,
+  HelpCircle,
 } from 'lucide-react';
 import { useTripStore } from '../store/useTripStore';
 import { MOCK_HOSPITALS, MOCK_POLICE_STATIONS } from '../data/mockTripData';
 import { translations } from '../i18n/translations';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const DossierPage: React.FC = () => {
   const language = useTripStore((s) => s.language);
@@ -59,6 +61,14 @@ export const DossierPage: React.FC = () => {
       setTimeout(() => setCopiedDossier(false), 2000);
     }
   };
+
+  if (!plannerForm.destination) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        <EmptyState type="dossier" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-6 print:p-0 print:m-0 print:max-w-none">

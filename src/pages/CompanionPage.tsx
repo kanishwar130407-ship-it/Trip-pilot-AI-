@@ -39,9 +39,16 @@ import {
   FileText,
   Bookmark,
   Send,
+  HelpCircle,
+  Eye,
+  X,
 } from 'lucide-react';
 import { useTripStore } from '../store/useTripStore';
 import { RoadRisk3D } from '../components/3d/RoadRisk3D';
+import { ControlCenter3D } from '../components/3d/ControlCenter3D';
+import { AnimatedCar } from '../components/vehicles/AnimatedCar';
+import { AnimatedTrain } from '../components/vehicles/AnimatedTrain';
+import { EmptyState } from '../components/common/EmptyState';
 import {
   MOCK_HOSPITALS,
   MOCK_POLICE_STATIONS,
@@ -82,11 +89,17 @@ export const CompanionPage: React.FC = () => {
   const setSimulatedTripTimeMinutes = useTripStore((s) => s.setSimulatedTripTimeMinutes);
   const setStep = useTripStore((s) => s.setStep);
   const triggerDisruption = useTripStore((s) => s.triggerDisruption);
+  const openHelpSheet = useTripStore((s) => s.openHelpSheet);
+  const addToast = useTripStore((s) => s.addToast);
 
   // Active sub-tab in Companion dashboard
   const [activeTab, setActiveTab] = useState<
     'overview' | 'safety' | 'budget' | 'translator' | 'group' | 'health' | 'nav'
   >('overview');
+
+  // 3D Mission Control & Sharing Confirm Modals
+  const [isControlCenterOpen, setIsControlCenterOpen] = useState(false);
+  const [showSharingConfirm, setShowSharingConfirm] = useState(false);
 
   // Location tracking state
   const [hasLocationPermission, setHasLocationPermission] = useState(true);
@@ -274,19 +287,37 @@ export const CompanionPage: React.FC = () => {
           </p>
         </div>
 
-        {/* SOS Action Button */}
-        <div className="flex items-center gap-3">
+        {/* Top Actions: 3D Mission Control & SOS */}
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
-            onClick={() => setSosActive(!isSosActive)}
-            className={`px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-xl active:scale-95 ${
-              isSosActive
-                ? 'bg-red-600 text-white animate-pulse ring-4 ring-red-500/40 shadow-red-600/50'
-                : 'bg-red-600/90 hover:bg-red-600 text-white shadow-red-900/30'
-            }`}
+            onClick={() => setIsControlCenterOpen(true)}
+            className="px-4 py-2.5 rounded-2xl text-xs font-bold bg-gradient-to-r from-[#14B8A6] to-teal-600 hover:from-teal-500 hover:to-teal-700 text-white flex items-center gap-2 shadow-lg shadow-teal-500/25 active:scale-95 transition-all"
           >
-            <AlertTriangle className="w-4 h-4" />
-            <span>{isSosActive ? 'SOS ENGAGED (CANCEL)' : t.companion.sosButton}</span>
+            <Compass className="w-4 h-4 animate-spin-slow" />
+            <span>{language === 'ta' ? '3D மிஷன் கண்ட்ரோல்' : '3D Mission Control'}</span>
           </button>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setSosActive(!isSosActive)}
+              className={`px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-xl active:scale-95 ${
+                isSosActive
+                  ? 'bg-red-600 text-white animate-pulse ring-4 ring-red-500/40 shadow-red-600/50'
+                  : 'bg-red-600 hover:bg-red-700 text-white shadow-red-900/30'
+              }`}
+            >
+              <AlertTriangle className="w-4 h-4" />
+              <span>{isSosActive ? 'SOS ENGAGED' : t.companion.sosButton}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => openHelpSheet('sos')}
+              className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white"
+              title="SOS Emergency Guide"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -501,11 +532,33 @@ export const CompanionPage: React.FC = () => {
               {/* Live Sharing Controls */}
               <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white">
-                    Live Location Sharing
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">
+                      Live Location Sharing
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => openHelpSheet('live_sharing')}
+                      className="text-slate-400 hover:text-[#FF7A1A]"
+                      title="Learn about Location Sharing"
+                    >
+                      <HelpCircle className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                   <button
-                    onClick={() => toggleLiveSharing('1h')}
+                    onClick={() => {
+                      if (isLiveSharing) {
+                        stopLiveSharing();
+                        addToast(
+                          language === 'ta'
+                            ? 'இருப்பிடப் பகிர்வு நிறுத்தப்பட்டது'
+                            : 'Live location sharing stopped',
+                          'info'
+                        );
+                      } else {
+                        setShowSharingConfirm(true);
+                      }
+                    }}
                     className={`py-1.5 px-3 rounded-xl text-xs font-bold transition ${
                       isLiveSharing
                         ? 'bg-red-500/10 text-red-600 border border-red-500/30'
@@ -572,10 +625,20 @@ export const CompanionPage: React.FC = () => {
           <div className="lg:col-span-7 space-y-5">
             <div className="bg-white dark:bg-[#0B1F3A] rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <ShieldAlert className="w-4 h-4 text-[#FF7A1A]" />
-                  <span>{t.companion.roadRisk}</span>
-                </h2>
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                    {t.companion.roadRisk}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => openHelpSheet('road_risk')}
+                    className="text-slate-400 hover:text-[#FF7A1A]"
+                    title="Road Risk Telemetry Guide"
+                  >
+                    <HelpCircle className="w-3.5 h-3.5" />
+                  </button>
+                </div>
 
                 <div className="flex items-center gap-1">
                   {(['low', 'medium', 'high'] as const).map((r) => (
@@ -600,6 +663,17 @@ export const CompanionPage: React.FC = () => {
 
               {/* 3D Animated Hill Road & Car */}
               <RoadRisk3D riskLevel={roadRiskLevel} className="w-full h-48 sm:h-56" />
+
+              {/* Realistic Animated Vehicle telemetry */}
+              <div className="my-2">
+                <AnimatedCar
+                  speed={userLocation.speed}
+                  riskLevel={roadRiskLevel}
+                  weather={roadRiskLevel === 'high' ? 'fog' : 'clear'}
+                  isSosActive={isSosActive}
+                  routeLabel={`${plannerForm.from || 'Chennai'} → ${plannerForm.destination || 'Ooty'}`}
+                />
+              </div>
 
               {/* Risk Reasons & Alternate Routes */}
               <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-xs text-amber-900 dark:text-amber-200 space-y-1.5">
@@ -1273,6 +1347,99 @@ export const CompanionPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Transparent Location Sharing Confirmation Dialog */}
+      <AnimatePresence>
+        {showSharingConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-md rounded-3xl bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-slate-700 p-6 shadow-2xl text-slate-900 dark:text-white space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                    <Radio className="w-4 h-4 animate-pulse" />
+                  </div>
+                  <h3 className="font-extrabold text-base">
+                    {language === 'ta' ? 'இருப்பிடப் பகிர்வை உறுதிசெய்க' : 'Confirm Live Location Sharing'}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowSharingConfirm(false)}
+                  className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+                <div className="font-semibold text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">
+                  {language === 'ta' ? 'பகிரப்படும் தரவுகள்:' : 'Exact Data Shared:'}
+                </div>
+                <div className="flex justify-between">
+                  <span>GPS Coordinates:</span>
+                  <span className="font-mono font-bold text-teal-600 dark:text-teal-400">
+                    {userLocation.latitude.toFixed(4)}° N, {userLocation.longitude.toFixed(4)}° E
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Vehicle Speed:</span>
+                  <span className="font-bold">{userLocation.speed} km/h</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Next Activity ETA:</span>
+                  <span className="font-bold text-amber-500">{userLocation.etaNextActivity}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Expiry Duration:</span>
+                  <span className="font-bold">1 Hour (Auto-Revokes)</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                {language === 'ta'
+                  ? 'இந்த இணைப்பு தனிப்பட்டதாகும். நீங்கள் இணைப்பைப் பகிரும் நபர்கள் மட்டுமே உங்கள் பயண வரைபடத்தைக் காண முடியும். எந்த நேரத்திலும் நிறுத்தலாம்.'
+                  : 'Only persons with your unique link can view this live tracking map. You can revoke access at any second.'}
+              </p>
+
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    toggleLiveSharing('1h');
+                    setShowSharingConfirm(false);
+                    addToast(
+                      language === 'ta'
+                        ? 'இருப்பிடப் பகிர்வு தொடங்கப்பட்டது! இணைப்பு உருவாக்கப்பட்டது.'
+                        : 'Live sharing active! Private tracking URL created.',
+                      'success'
+                    );
+                  }}
+                  className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#14B8A6] to-teal-600 hover:from-teal-500 hover:to-teal-700 text-white font-bold text-xs shadow-lg shadow-teal-500/25 active:scale-95 transition-all"
+                >
+                  {language === 'ta' ? 'உறுதிசெய்து பகிர்க' : 'Enable & Generate Link'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowSharingConfirm(false)}
+                  className="py-3 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs hover:bg-slate-200 dark:hover:bg-slate-700"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* 3D Mission Control Center Modal */}
+      <ControlCenter3D
+        isOpen={isControlCenterOpen}
+        onClose={() => setIsControlCenterOpen(false)}
+      />
     </div>
   );
 };

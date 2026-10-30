@@ -12,11 +12,13 @@ import {
   Car,
   UtensilsCrossed,
   Info,
+  HelpCircle,
 } from 'lucide-react';
 import { useTripStore } from '../store/useTripStore';
 import { TravelPackage } from '../types/trip';
 import { AirshipsComparison3D } from '../components/3d/AirshipsComparison3D';
 import { translations } from '../i18n/translations';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const PackagePage: React.FC = () => {
   const language = useTripStore((s) => s.language);
@@ -29,6 +31,7 @@ export const PackagePage: React.FC = () => {
   const toggleComparePackage = useTripStore((s) => s.toggleComparePackage);
   const setStep = useTripStore((s) => s.setStep);
   const unlockStep = useTripStore((s) => s.unlockStep);
+  const openHelpSheet = useTripStore((s) => s.openHelpSheet);
 
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [show3DAirships, setShow3DAirships] = useState(true);
@@ -55,9 +58,19 @@ export const PackagePage: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5" />
             <span>AI Package Comparison Engine</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            {t.package.title}
-          </h1>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              {t.package.title}
+            </h1>
+            <button
+              type="button"
+              onClick={() => openHelpSheet('budget')}
+              className="p-1.5 rounded-full bg-slate-800 text-slate-300 hover:text-white"
+              title="Budget & Package Tiers Help"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+          </div>
           <p className="text-xs sm:text-sm text-slate-300 mt-1">
             {t.package.subtitle}
           </p>

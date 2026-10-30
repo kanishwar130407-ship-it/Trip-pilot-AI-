@@ -112,6 +112,51 @@ interface TripStoreState {
   setSimulatedTripTimeMinutes: (minutes: number) => void;
   setRoadRiskLevel: (level: 'low' | 'medium' | 'high') => void;
 
+  // UI Shell & Navigation Layout
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+  toggleSidebar: () => void;
+  completedSteps: number[];
+  markStepCompleted: (step: number) => void;
+
+  // Accessibility & Animation Settings
+  reduce3dEffects: boolean;
+  toggleReduce3dEffects: () => void;
+  reduceAnimations: boolean;
+  toggleReduceAnimations: () => void;
+
+  // First-Time Product Tour
+  tourCompleted: boolean;
+  setTourCompleted: (completed: boolean) => void;
+  resetTour: () => void;
+
+  // Smart Help Modal ("?")
+  activeHelpSheet: string | null;
+  openHelpSheet: (feature: string) => void;
+  closeHelpSheet: () => void;
+
+  // Toast Notification System
+  toasts: { id: string; message: string; type?: 'info' | 'success' | 'warning' | 'error' }[];
+  addToast: (message: string, type?: 'info' | 'success' | 'warning' | 'error') => void;
+  removeToast: (id: string) => void;
+
+  // Notifications
+  notifications: { id: string; title: string; time: string; read: boolean; type: 'info' | 'alert' | 'success' }[];
+  markNotificationsRead: () => void;
+
+  // User Profile
+  userProfile: {
+    name: string;
+    avatar: string;
+    email: string;
+    bookingId: string;
+  };
+
+  // Saved & Recent Trips
+  recentDestinations: string[];
+  savedTrips: { id: string; title: string; destination: string; date: string; cost: number; mode: string }[];
+  quickPlanMode: (mode: TripModeType) => void;
+
   // Budget & Expenses
   expenses: ExpenseItem[];
   addExpense: (expense: Omit<ExpenseItem, 'id'>) => void;
@@ -215,6 +260,116 @@ export const useTripStore = create<TripStoreState>((set, get) => {
     maxUnlockedStep: 6, // fully explorable in demo mode as requested
     setStep: (step) => set({ currentStep: step }),
     unlockStep: (step) => set((s) => ({ maxUnlockedStep: Math.max(s.maxUnlockedStep, step) })),
+
+    // UI Shell & Navigation Layout
+    sidebarOpen: false,
+    setSidebarOpen: (open) => set({ sidebarOpen: open }),
+    toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
+    completedSteps: [1, 2, 3],
+    markStepCompleted: (step) =>
+      set((s) => ({ completedSteps: Array.from(new Set([...s.completedSteps, step])) })),
+
+    // Accessibility & Animation Settings
+    reduce3dEffects: localStorage.getItem('trippilot_reduce_3d') === 'true',
+    toggleReduce3dEffects: () => {
+      const next = !get().reduce3dEffects;
+      localStorage.setItem('trippilot_reduce_3d', String(next));
+      set({ reduce3dEffects: next });
+    },
+    reduceAnimations: localStorage.getItem('trippilot_reduce_anim') === 'true',
+    toggleReduceAnimations: () => {
+      const next = !get().reduceAnimations;
+      localStorage.setItem('trippilot_reduce_anim', String(next));
+      set({ reduceAnimations: next });
+    },
+
+    // First-Time Product Tour
+    tourCompleted: localStorage.getItem('trippilot_tour_done') === 'true',
+    setTourCompleted: (completed) => {
+      localStorage.setItem('trippilot_tour_done', String(completed));
+      set({ tourCompleted: completed });
+    },
+    resetTour: () => {
+      localStorage.removeItem('trippilot_tour_done');
+      set({ tourCompleted: false });
+    },
+
+    // Smart Help Modal ("?")
+    activeHelpSheet: null,
+    openHelpSheet: (feature) => set({ activeHelpSheet: feature }),
+    closeHelpSheet: () => set({ activeHelpSheet: null }),
+
+    // Toast Notification System
+    toasts: [],
+    addToast: (message, type = 'info') => {
+      const id = 't-' + Date.now();
+      set((s) => ({ toasts: [...s.toasts, { id, message, type }] }));
+      setTimeout(() => get().removeToast(id), 3500);
+    },
+    removeToast: (id) =>
+      set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
+
+    // Notifications
+    notifications: [
+      {
+        id: 'n-1',
+        title: 'Route Advisory: Kallar Ghat evening fog expected after 5:30 PM',
+        time: '12 mins ago',
+        read: false,
+        type: 'alert',
+      },
+      {
+        id: 'n-2',
+        title: 'Booking Confirmed: Classic Comfort Package (TP-2026-7842)',
+        time: '1 hour ago',
+        read: false,
+        type: 'success',
+      },
+      {
+        id: 'n-3',
+        title: 'Live Location Sharing initialized with 3 trusted contacts',
+        time: '2 hours ago',
+        read: true,
+        type: 'info',
+      },
+    ],
+    markNotificationsRead: () =>
+      set((s) => ({
+        notifications: s.notifications.map((n) => ({ ...n, read: true })),
+      })),
+
+    // User Profile
+    userProfile: {
+      name: 'Karthik Ramanathan',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+      email: 'karthik.ramanathan@example.com',
+      bookingId: 'TP-2026-7842',
+    },
+
+    // Saved & Recent Trips
+    recentDestinations: ['Ooty', 'Rameswaram', 'Kodaikanal', 'Coonoor', 'Dubai'],
+    savedTrips: [
+      {
+        id: 'st-1',
+        title: 'Nilgiri Mountain Rail & Tea Highlands',
+        destination: 'Ooty (Udhagamandalam)',
+        date: 'Nov 5 - 7, 2026',
+        cost: 12400,
+        mode: 'nature',
+      },
+      {
+        id: 'st-2',
+        title: 'Shore Temple & Heritage Coastal Ride',
+        destination: 'Mahabalipuram',
+        date: 'Dec 12 - 14, 2026',
+        cost: 6800,
+        mode: 'weekend',
+      },
+    ],
+    quickPlanMode: (mode) => {
+      set({ selectedTripMode: mode, currentStep: 1 });
+      get().setPlannerField('tripMode', mode);
+    },
 
     searchQuery: '',
     selectedTripMode: 'nature',

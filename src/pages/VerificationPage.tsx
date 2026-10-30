@@ -16,10 +16,12 @@ import {
   Plane,
   X,
   FileCheck2,
+  HelpCircle,
 } from 'lucide-react';
 import { useTripStore } from '../store/useTripStore';
 import { TravelerInfo } from '../types/trip';
 import { translations } from '../i18n/translations';
+import { BookingSuccessVehicleModal } from '../components/vehicles/BookingSuccessVehicleModal';
 
 export const VerificationPage: React.FC = () => {
   const language = useTripStore((s) => s.language);
@@ -40,6 +42,7 @@ export const VerificationPage: React.FC = () => {
   const bookingId = useTripStore((s) => s.bookingId);
   const setStep = useTripStore((s) => s.setStep);
   const unlockStep = useTripStore((s) => s.unlockStep);
+  const openHelpSheet = useTripStore((s) => s.openHelpSheet);
 
   const [inputCoupon, setInputCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
@@ -433,12 +436,21 @@ export const VerificationPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Mock Payment Method Selector */}
           <div className="bg-white dark:bg-[#0B1F3A] rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-[#FF7A1A]" />
-              <span>{t.verification.paymentMethod}</span>
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-[#FF7A1A]" />
+                <span>{t.verification.paymentMethod}</span>
+              </h2>
+              <button
+                type="button"
+                onClick={() => openHelpSheet('payment')}
+                className="text-slate-400 hover:text-[#FF7A1A]"
+                title="Payment Protection & Gateway Guide"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+            </div>
 
             <div className="grid grid-cols-3 gap-3">
               {[
@@ -494,58 +506,11 @@ export const VerificationPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Booking Launch Sequence Full-screen Success Modal */}
-      <AnimatePresence>
-        {showSuccessModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white dark:bg-[#071427] rounded-3xl p-6 sm:p-8 max-w-lg w-full text-center border border-teal-500/30 shadow-2xl space-y-5 relative overflow-hidden"
-            >
-              {/* Animated checkmark circle */}
-              <div className="w-20 h-20 mx-auto rounded-full bg-teal-500 text-white flex items-center justify-center shadow-lg shadow-teal-500/40">
-                <Check className="w-10 h-10 stroke-[3] animate-bounce" />
-              </div>
-
-              <div>
-                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-teal-500/15 text-teal-600 dark:text-teal-400 uppercase tracking-wider">
-                  Payment Verified
-                </span>
-                <h2 className="text-2xl font-black text-slate-900 dark:text-white mt-2">
-                  {t.verification.bookingSuccess}
-                </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Your journey has been synchronized with the live TripPilot AI engine.
-                </p>
-              </div>
-
-              {/* Holographic Booking ID Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-[#0B1F3A] to-[#14B8A6]/20 border border-[#FF7A1A]/40 text-white space-y-1">
-                <span className="text-[10px] uppercase font-bold text-slate-300">
-                  {t.verification.bookingId}
-                </span>
-                <div className="text-xl font-mono font-black text-[#FF7A1A] tracking-wider">
-                  {bookingId}
-                </div>
-                <div className="text-[11px] text-slate-300">
-                  {plannerForm.from} &rarr; {plannerForm.destination} • {travelers.length} Travelers
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleProceedToCompanion}
-                className="w-full py-3.5 rounded-2xl bg-[#FF7A1A] hover:bg-[#ff8c38] text-white font-extrabold text-sm shadow-xl shadow-[#FF7A1A]/40 flex items-center justify-center gap-2 active:scale-95 transition-transform"
-              >
-                <span>{t.verification.continueToCompanion}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Mode-Specific Vehicle Celebration Booking Success Modal */}
+      <BookingSuccessVehicleModal
+        isOpen={showSuccessModal}
+        onProceed={handleProceedToCompanion}
+      />
     </div>
   );
 };
